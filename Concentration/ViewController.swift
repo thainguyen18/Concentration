@@ -41,20 +41,26 @@ class ViewController: UIViewController
             }
         }
         
+        let attributes: [NSAttributedStringKey:Any] = [
+            .strokeWidth : 5.0,
+            .strokeColor : #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)
+        ]
+        
+        let attributedString = NSAttributedString(string: "Flips: " + String(game.flipsCount), attributes: attributes)
+        
         scoreLabel.text = "Score: \(game.score)"
         
-        flipCountLabel.text = "Flips: \(game.flipsCount)"
+        flipCountLabel.attributedText = attributedString
     }
     
     @IBOutlet private var cardButtons: [UIButton]!
     
-    private var themes = ["animals":["🐶","🐱","🐰","🦊","🦁","🐵","🦆","🕷","🦂","🐟","🐍","🐿"],
-                  "sports":["⚽️","🏀","🏈","🎱","🏓","🏹","⛸","⛷","🎣","🥊","🎾","🏐"],
-                  "faces":["😄","☺️","😍","😂","😡","😈","😱","😤","😐","😵","😇","😎"],
-                    "fruits":["🍎","🍊","🍋","🍌","🍉","🍓","🥑","🌽","🍅","🍍","🥦","🥒"],
-                    "objects":["⌚️","📱","💻","🖨","🖱","📷","📺","🎥","🔦","⏰","💎","💰"],
-                    "flags":["🇻🇳","🇺🇸","🏴󠁧󠁢󠁥󠁮󠁧󠁿","🇧🇷","🇫🇷","🇩🇪","🇮🇹","🇨🇳","🇯🇵","🇪🇸","🇰🇷","🇨🇭"]
-                  ]
+    private var themes = ["animals":"🐶🐱🐰🦊🦁🐵🦆🕷🦂🐟🐍🐿",
+                  "sports":"⚽️🏀🏈🎱🏓🏹⛸⛷🎣🥊🎾🏐",
+                  "faces":"😄☺️😍😂😡😈😱😤😐😵😇😎",
+                    "fruits":"🍎🍊🍋🍌🍉🍓🥑🌽🍅🍍🥦🥒",
+                    "objects":"⌚️📱💻🖨🖱📷📺🎥🔦⏰💎💰",
+                    "flags":"🇻🇳🇺🇸🏴󠁧󠁢󠁥󠁮󠁧󠁿🇧🇷🇫🇷🇩🇪🇮🇹🇨🇳🇯🇵🇪🇸🇰🇷🇨🇭"]
     
     private var backgroundColors = ["animals":#colorLiteral(red: 0.13333, green: 0.13333, blue: 0.13333, alpha: 1), "sports":#colorLiteral(red: 0.1764705926, green: 0.01176470611, blue: 0.5607843399, alpha: 1), "faces":#colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1), "fruits":#colorLiteral(red: 0.9254902005, green: 0.2352941185, blue: 0.1019607857, alpha: 1), "objects":#colorLiteral(red: 0.9994240403, green: 0.9855536819, blue: 0, alpha: 1), "flags":#colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)]
     
@@ -62,17 +68,18 @@ class ViewController: UIViewController
     
     private var chosenCardColor = #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)
     
-    private var emojiChoices = [String]()
+    private var emojiChoices = ""
     
-    private var emoji = [Int:String]()
+    private var emoji = [Card:String]()
     
     private func emoji(for card: Card) -> String {
         
-        if emoji[card.identifier] == nil, emojiChoices.count > 0 {
-            emoji[card.identifier] = emojiChoices.remove(at: emojiChoices.count.arc4random)
+        if emoji[card] == nil, emojiChoices.count > 0 {
+            let randomStringIndex = emojiChoices.index(emojiChoices.startIndex, offsetBy: emojiChoices.count.arc4random)
+            emoji[card] = String(emojiChoices.remove(at: randomStringIndex))
         }
         
-        return emoji[card.identifier] ?? "?"
+        return emoji[card] ?? "?"
     }
     
     
@@ -87,8 +94,8 @@ class ViewController: UIViewController
     
     private func randomThemeForgame() {
         let themeKeys = Array(themes.keys)
-        let randomThemeKey = Int(arc4random_uniform(UInt32(themeKeys.count)))
-        emojiChoices = themes[themeKeys[randomThemeKey]] ?? []
+        let randomThemeKey = themeKeys.count.arc4random
+        emojiChoices = themes[themeKeys[randomThemeKey]] ?? ""
         self.view.backgroundColor = backgroundColors[themeKeys[randomThemeKey]] ?? #colorLiteral(red: 0.13333, green: 0.13333, blue: 0.13333, alpha: 1)
         chosenCardColor = cardBackColors[themeKeys[randomThemeKey]] ?? #colorLiteral(red: 1, green: 0.5763723254, blue: 0, alpha: 1)
     }
